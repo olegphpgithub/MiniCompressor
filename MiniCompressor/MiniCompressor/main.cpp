@@ -132,13 +132,13 @@ static uint8 s_outbuf[BUF_SIZE];
 
 int _tmain(int argc, _TCHAR* argv[])
 {
+	/*
 	std::string s1 = "hello world!!! 123123123";
 	std::string s2 = MiniCompressor::CompressString(s1);
 	std::cout << s2 << std::endl;
 	std::string s3 = MiniCompressor::DecompressString(s2);
 	std::cout << s3 << std::endl;
 
-	
   const char *pMode;
   FILE *pInfile, *pOutfile;
   uint infile_size;
@@ -390,7 +390,13 @@ int _tmain(int argc, _TCHAR* argv[])
   printf("Success.\n");
   return EXIT_SUCCESS;
 
-	//return 0;
+*/
+    errno_t oleg = MiniCompressor::DecompressFromFileToFile("d:\\MiniCompressor\\MiniCompressor\\Release\\c.pdf", "d:\\MiniCompressor\\MiniCompressor\\Release\\f.pdf");
+    if(oleg == ERROR_SUCCESS) {
+        printf("success 11111111\n");
+    } else {
+        printf("fail 11111111\n");
+    }
 
-	//MiniCompressor::DecompressFromFileToFile("c:\\progs\\lightzip\\Debug\\outfile.zip", "c:\\progs\\lightzip\\Debug\\finalfile.zip");
+	//return 0;
 }

@@ -21,81 +21,82 @@ MiniCompressor::~MiniCompressor(void)
 
 std::string MiniCompressor::CompressString(std::string source_string)
 {
-	std::string compressed_string;
-	uLong compressed_length = compressBound(source_string.length());
-	unsigned char *pDest;
-	pDest = (mz_uint8 *)malloc((size_t)compressed_length);
+    std::string compressed_string;
+    uLong compressed_length = compressBound(source_string.length());
+    unsigned char *pDest;
+    pDest = (mz_uint8 *)malloc((size_t)compressed_length);
 
-	int cmp_status = compress(pDest, &compressed_length, (const unsigned char *)source_string.c_str(), source_string.length());
-	if (cmp_status == Z_OK)
-	{
-		compressed_string = base64_encode2(pDest, compressed_length);
-	}
-	free(pDest);
+    int cmp_status = compress(pDest, &compressed_length, (const unsigned char *)source_string.c_str(), source_string.length());
+    if (cmp_status == Z_OK)
+    {
+        compressed_string = base64_encode2(pDest, compressed_length);
+    }
+    free(pDest);
 
-	return compressed_string;
+    return compressed_string;
 }
 
 std::string MiniCompressor::DecompressString(std::string comressed_string)
 {
-	std::string decompressed_string;
-	uLong decompressed_length = 1024;
-	unsigned char *pDest;
-	pDest = (mz_uint8 *)malloc((size_t)decompressed_length);
-	decompressed_string = base64_decode2(comressed_string);
-	int cmp_status = uncompress(pDest, &decompressed_length, (const unsigned char *)decompressed_string.c_str(), decompressed_string.length());
-	if (cmp_status == Z_OK)
-	{
-		//std::string tmp_string(pDest);
-		//decompressed_string.assign(tmp_string);
-	}
-	free(pDest);
-	return decompressed_string;
+    std::string decompressed_string, decomded_string;
+    uLong decompressed_length = 1024;
+    unsigned char *pDest;
+    pDest = (mz_uint8 *)malloc((size_t)decompressed_length);
+    memset(pDest, 0, (size_t)decompressed_length);
+    decomded_string = base64_decode2(comressed_string);
+    int cmp_status = uncompress(pDest, &decompressed_length, (const unsigned char *)decomded_string.c_str(), decomded_string.length());
+    if (cmp_status == Z_OK)
+    {
+        std::string tmp_string((char*)pDest);
+        decompressed_string.assign(tmp_string);
+    }
+    free(pDest);
+    return decompressed_string;
 }
 
-DWORD MiniCompressor::DecompressFromFileToFile(LPTSTR infile, LPTSTR outfile)
+errno_t MiniCompressor::DecompressFromFileToFile(LPTSTR infile, LPTSTR outfile)
 {
-	errno_t err;
-	FILE *pInfile, *pOutfile;
-	unsigned __int64 infile_size;
-	int level = Z_BEST_COMPRESSION;
-	z_stream stream;
-	
-	err = _tfopen_s(&pInfile, infile, TEXT("rb"));
-	if (err != 0)
-	{
-		printf("Failed opening input file!\n");
-		return EXIT_FAILURE;
-	}
+    errno_t err;
+    FILE *pInfile, *pOutfile;
+    unsigned __int64 infile_size;
+    int level = Z_BEST_COMPRESSION;
+    z_stream stream;
+    
+    err = _tfopen_s(&pInfile, infile, TEXT("rb"));
+    if (err != 0)
+    {
+        printf("Failed opening input file!\n");
+        return EXIT_FAILURE;
+    }
 
-	// Determine input file's size.
-	fseek(pInfile, 0, SEEK_END);
-	unsigned __int32 file_loc = ftell(pInfile);
-	fseek(pInfile, 0, SEEK_SET);
+    // Determine input file's size.
+    fseek(pInfile, 0, SEEK_END);
+    unsigned __int32 file_loc = ftell(pInfile);
+    fseek(pInfile, 0, SEEK_SET);
 
-	if ((file_loc < 0) || (file_loc > INT_MAX))
-	{
-		// This is not a limitation of miniz or tinfl, but this example.
-		 printf("File is too large to be processed by this example.\n");
-		return EXIT_FAILURE;
-	}
+    if ((file_loc < 0) || (file_loc > INT_MAX))
+    {
+        // This is not a limitation of miniz or tinfl, but this example.
+        printf("File is too large to be processed by this example.\n");
+        return EXIT_FAILURE;
+    }
 
-	infile_size = file_loc;
-	
-	// Open output file.
-	err = _tfopen_s(&pOutfile, outfile, "wb");
-	if (err != 0)
-	{
-		//printf("Failed opening output file!\n");
-		return EXIT_FAILURE;
-	}
+    infile_size = file_loc;
+    
+    // Open output file.
+    err = _tfopen_s(&pOutfile, outfile, "wb");
+    if (err != 0)
+    {
+        //printf("Failed opening output file!\n");
+        return EXIT_FAILURE;
+    }
 
-	// Init the z_stream
-	memset(&stream, 0, sizeof(stream));
-	stream.next_in = s_inbuf;
-	stream.avail_in = 0;
-	stream.next_out = s_outbuf;
-	stream.avail_out = BUF_SIZE;
+    // Init the z_stream
+    memset(&stream, 0, sizeof(stream));
+    stream.next_in = s_inbuf;
+    stream.avail_in = 0;
+    stream.next_out = s_outbuf;
+    stream.avail_out = BUF_SIZE;
 
     // Decompression.
     unsigned __int32 infile_remaining = (unsigned __int32)infile_size;
@@ -155,8 +156,8 @@ DWORD MiniCompressor::DecompressFromFileToFile(LPTSTR infile, LPTSTR outfile)
       //printf("inflateEnd() failed!\n");
       return EXIT_FAILURE;
     }
-	fclose(pInfile);
-	fclose(pOutfile);
+    fclose(pInfile);
+    fclose(pOutfile);
 
-	return EXIT_SUCCESS;
+    return EXIT_SUCCESS;
 }
