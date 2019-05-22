@@ -31,7 +31,6 @@ std::string MiniCompressor::CompressString(std::string source_string)
     int cmp_status = compress(pDest, &compressed_length, (const unsigned char *)source_string.c_str(), source_string.length());
     if (cmp_status == Z_OK)
     {
-        //compressed_string = base64_encode2(pDest, compressed_length);
         size_t size;
         unsigned char *usz_encoded;
         usz_encoded = base64_encode(pDest, compressed_length, &size);
