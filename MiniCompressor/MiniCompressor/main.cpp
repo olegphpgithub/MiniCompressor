@@ -145,13 +145,13 @@ int _tmain(int argc, _TCHAR* argv[])
     fined = MiniCompressor::base64_decode(coded, size1, &size2);
     */
 
-    unsigned char ch[50]="aGVsbG8gd29ybGQhISEgMTIzNDU2Nzg5MA==##########@@@";
+    unsigned char ch[500]="aGVs";
     unsigned char *coded;
     unsigned char *fined;
     size_t size1;
     size_t size2;
     //coded = MiniCompressor::base64_encode((const unsigned char *)ch, 49, &size1);
-    fined = MiniCompressor::base64_decode(ch, 16, &size2);
+    fined = MiniCompressor::base64_decode(ch, 4, &size2);
 
 
 	std::string s2 = MiniCompressor::CompressString(s1);

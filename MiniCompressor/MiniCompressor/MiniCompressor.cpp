@@ -5,7 +5,6 @@
 
 #define MINIZ_HEADER_FILE_ONLY
 #include "miniz.c"
-#include "base64.h"
 
 #define BUF_SIZE 1024
 static unsigned char s_inbuf[BUF_SIZE];
@@ -34,10 +33,11 @@ std::string MiniCompressor::CompressString(std::string source_string)
     {
         //compressed_string = base64_encode2(pDest, compressed_length);
         size_t size;
-        unsigned char * ch;
-        ch = base64_encode(pDest, compressed_length, &size);
-        std::string tmpstr((char *)ch);
+        unsigned char *usz_encoded;
+        usz_encoded = base64_encode(pDest, compressed_length, &size);
+        std::string tmpstr((char *)usz_encoded);
         compressed_string.assign(tmpstr);
+        free(usz_encoded);
     }
     free(pDest);
 
@@ -46,18 +46,24 @@ std::string MiniCompressor::CompressString(std::string source_string)
 
 std::string MiniCompressor::DecompressString(std::string comressed_string)
 {
+
     std::string decompressed_string, decomded_string;
     uLong decompressed_length = 1024;
     unsigned char *pDest;
     pDest = (mz_uint8 *)malloc((size_t)decompressed_length);
     memset(pDest, 0, (size_t)decompressed_length);
-    decomded_string = base64_decode2(comressed_string);
-    int cmp_status = uncompress(pDest, &decompressed_length, (const unsigned char *)decomded_string.c_str(), decomded_string.length());
+
+    size_t size;
+    unsigned char *usz_decoded;
+    usz_decoded = base64_decode((const unsigned char *)comressed_string.c_str(), comressed_string.length(), &size);
+
+    int cmp_status = uncompress(pDest, &decompressed_length, (const unsigned char *)usz_decoded, size);
     if (cmp_status == Z_OK)
     {
         std::string tmp_string((char*)pDest);
         decompressed_string.assign(tmp_string);
     }
+    free(usz_decoded);
     free(pDest);
     return decompressed_string;
 }
