@@ -132,13 +132,33 @@ static uint8 s_outbuf[BUF_SIZE];
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	/*
-	std::string s1 = "hello world!!! 123123123";
+	
+	std::string s1 = "hello world!!! 1234567890";
+
+    /** Good
+    unsigned char ch[26]="hello world!!! 1234567890";
+    unsigned char *coded;
+    unsigned char *fined;
+    size_t size1;
+    size_t size2;
+    coded = MiniCompressor::base64_encode((const unsigned char *)ch, 25, &size1);
+    fined = MiniCompressor::base64_decode(coded, size1, &size2);
+    */
+
+    unsigned char ch[50]="aGVsbG8gd29ybGQhISEgMTIzNDU2Nzg5MA==##########@@@";
+    unsigned char *coded;
+    unsigned char *fined;
+    size_t size1;
+    size_t size2;
+    //coded = MiniCompressor::base64_encode((const unsigned char *)ch, 49, &size1);
+    fined = MiniCompressor::base64_decode(ch, 16, &size2);
+
+
 	std::string s2 = MiniCompressor::CompressString(s1);
 	std::cout << s2 << std::endl;
 	std::string s3 = MiniCompressor::DecompressString(s2);
 	std::cout << s3 << std::endl;
-
+/*
   const char *pMode;
   FILE *pInfile, *pOutfile;
   uint infile_size;
