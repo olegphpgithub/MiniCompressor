@@ -175,6 +175,15 @@ errno_t MiniCompressor::DecompressFromFileToFile(LPTSTR infile, LPTSTR outfile)
     return EXIT_SUCCESS;
 }
 
+
+errno_t MiniCompressor::DecompressFromFileToMemory(LPTSTR infile, unsigned char **dest, size_t *out_len)
+{
+    errno_t err;
+    err = 0;
+    return errno;
+}
+
+
 unsigned char * MiniCompressor::base64_encode(const unsigned char *src, size_t len,
     size_t *out_len)
 {
